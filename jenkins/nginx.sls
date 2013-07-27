@@ -5,7 +5,7 @@ include:
   file:
     - managed
     - template: jinja
-    - source: salt://jenkins/templates/nginx.conf
+    - source: salt://jenkins/files/nginx.conf
     - user: www-data
     - group: www-data
     - mode: 440
