@@ -13,6 +13,8 @@ Add a jenkins nginx entry.
 
 pillar customizations available:
 
+.. code-block:: yaml
+
     jenkins:
       port: 8090
       home: /opt/jenkins
