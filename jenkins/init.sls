@@ -34,13 +34,11 @@ jenkins:
     - name: deb http://pkg.jenkins-ci.org/debian binary/
     - key_url: http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key
     {% endif %}
+    - require_in: 
+      - pkg: jenkins
   {% endif %}
   pkg.latest:
     - refresh: True
-    {% if grains['os_family'] in ['RedHat', 'Debian'] %}
-    - require:
-      - pkgrepo: jenkins
-    {% endif %}
   service.running:
     - enable: True
     - watch:
