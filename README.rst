@@ -17,6 +17,11 @@ Install jenkins from the source package repositories and start it up.
 
 Add a jenkins nginx entry. 
 
+``jenkins.pkgrepo``
+-----------------
+
+Add and use the upstream jenkins-ci.org package repository instead of the default. (apt/yum only)
+
 Pillar customizations:
 ==========================
 
