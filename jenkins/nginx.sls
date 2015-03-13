@@ -18,8 +18,10 @@ include:
     - user: www-data
     - group: www-data
 
-extend:    
+extend:
   nginx:
     service:
       - watch:
         - file: /etc/nginx/sites-available/jenkins.conf
+      - require:
+        - file: /etc/nginx/sites-enabled/jenkins.conf
