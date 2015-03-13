@@ -2,8 +2,7 @@ include:
   - nginx
 
 /etc/nginx/sites-available/jenkins.conf:
-  file:
-    - managed
+  file.managed:
     - template: jinja
     - source: salt://jenkins/files/nginx.conf
     - user: www-data
