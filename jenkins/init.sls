@@ -6,7 +6,7 @@
 jenkins_group:
   group.present:
     - name: {{ group }}
-    
+
 jenkins_user:
   file.directory:
     - name: {{ home }}
@@ -20,6 +20,7 @@ jenkins_user:
     - name: {{ user }}
     - groups:
       - {{ group }}
+    - home: {{ home }}
     - require:
       - group: jenkins_group
 
@@ -34,7 +35,7 @@ jenkins:
     - name: deb http://pkg.jenkins-ci.org/debian binary/
     - key_url: http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key
     {% endif %}
-    - require_in: 
+    - require_in:
       - pkg: jenkins
   {% endif %}
   pkg.latest:
