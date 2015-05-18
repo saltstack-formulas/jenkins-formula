@@ -1,6 +1,3 @@
-include:
-  - nginx
-
 /etc/nginx/sites-available/jenkins.conf:
   file.managed:
     - template: jinja
