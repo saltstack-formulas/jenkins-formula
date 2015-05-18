@@ -9,7 +9,7 @@ env:
     - SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=test/pillar --file-root=$PWD"
   matrix:
     - STATE=jenkins
-    - STATE=jenkins,jenkins.nginx
+    - STATE=nginx,jenkins,jenkins.nginx
 
 before_install:
   - sudo apt-get update
