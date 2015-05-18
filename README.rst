@@ -17,7 +17,7 @@ Install jenkins from the source package repositories and start it up.
 
 Add a jenkins nginx entry. It depends on the nginx formula being installed and
 requires manual inclusion `nginx` and `jenkins` states in your `top.sls` to
-function.
+function, in this order: `jenkins`, `nginx`, `jenkins.nginx`.
 
 Pillar customizations:
 ==========================
