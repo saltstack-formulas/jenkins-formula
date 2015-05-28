@@ -1,26 +1,23 @@
-{% set jenkins = pillar.get('jenkins', {}) -%}
-{% set home = jenkins.get('home', '/usr/local/jenkins') -%}
-{% set user = jenkins.get('user', 'jenkins') -%}
-{% set group = jenkins.get('group', user) -%}
+{% from "jenkins/map.jinja" import jenkins with context %}
 
 jenkins_group:
   group.present:
-    - name: {{ group }}
+    - name: {{ jenkins.group }}
 
 jenkins_user:
   file.directory:
-    - name: {{ home }}
-    - user: {{ user }}
-    - group: {{ group }}
+    - name: {{ jenkins.home }}
+    - user: {{ jenkins.user }}
+    - group: {{ jenkins.group }}
     - mode: 0755
     - require:
       - user: jenkins_user
       - group: jenkins_group
   user.present:
-    - name: {{ user }}
+    - name: {{ jenkins.user }}
     - groups:
-      - {{ group }}
-    - home: {{ home }}
+      - {{ jenkins.group }}
+    - home: {{ jenkins.home }}
     - require:
       - group: jenkins_group
 

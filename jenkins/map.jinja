@@ -1,0 +1,7 @@
+{% set jenkins = salt['grains.filter_by']({
+    'default': {
+        'user': 'jenkins',
+        'group': 'jenkins',
+        'home': '/usr/local/jenkins',
+    },
+}, merge=salt['pillar.get']('jenkins:lookup')) %}
