@@ -3,5 +3,6 @@
         'user': 'jenkins',
         'group': 'jenkins',
         'home': '/var/lib/jenkins',
+        'port': '80',
     },
 }, merge=salt['pillar.get']('jenkins:lookup')) %}
