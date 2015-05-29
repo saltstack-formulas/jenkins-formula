@@ -2,6 +2,6 @@
     'default': {
         'user': 'jenkins',
         'group': 'jenkins',
-        'home': '/usr/local/jenkins',
+        'home': '/var/lib/jenkins',
     },
 }, merge=salt['pillar.get']('jenkins:lookup')) %}
