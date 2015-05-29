@@ -3,6 +3,7 @@
 jenkins_group:
   group.present:
     - name: {{ jenkins.group }}
+    - system: True
 
 jenkins_user:
   file.directory:
@@ -17,7 +18,9 @@ jenkins_user:
     - name: {{ jenkins.user }}
     - groups:
       - {{ jenkins.group }}
+    - system: True
     - home: {{ jenkins.home }}
+    - shell: /bin/bash
     - require:
       - group: jenkins_group
 
