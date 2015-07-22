@@ -1,4 +1,8 @@
 jenkins:
   lookup:
     home: /usr/local/jenkins
-    server_name: ci.example.com
+    server_name: localhost
+    master_url: http://localhost:8080
+    plugins:
+      installed:
+        - greenballs
