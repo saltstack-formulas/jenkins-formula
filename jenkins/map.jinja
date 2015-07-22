@@ -5,6 +5,13 @@
         'group': 'jenkins',
         'home': '/var/lib/jenkins',
         'port': '80',
-        'server_name': None
+        'server_name': None,
+        'cli': 'java -jar /var/cache/jenkins/war/WEB-INF/jenkins-cli.jar',
+        'master_url': None,
+        'plugins': {
+            'plugin_list': '/tmp/jenkins_plugin_list',
+            'updates_source': 'http://updates.jenkins-ci.org/update-center.json',
+            'installed': [],
+        },
     },
 }, merge=salt['pillar.get']('jenkins:lookup')) %}
