@@ -1,3 +1,4 @@
 jenkins:
   lookup:
     home: /usr/local/jenkins
+    server_name: ci.example.com
