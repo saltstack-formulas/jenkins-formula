@@ -38,8 +38,8 @@ jenkins:
     - require_in:
       - pkg: jenkins
   {% endif %}
-  pkg.latest:
-    - refresh: True
+  pkg.installed:
+    - pkgs: {{ jenkins.pkgs|json }}
   service.running:
     - enable: True
     - watch:
