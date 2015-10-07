@@ -3,6 +3,13 @@ include:
 
 {% from "jenkins/map.jinja" import jenkins with context %}
 
+{%- macro fmtarg(prefix, value)-%}
+{{ (prefix + ' ' + value) if value else '' }}
+{%- endmacro -%}
+{%- macro jenkins_cli(cmd, strargs) -%}
+{{ ' '.join([jenkins.cli, fmtarg('-s', jenkins.get('master_url')), fmtarg('-i', jenkins.get('privkey')), cmd, strargs]) }}
+{%- endmacro -%}
+
 jenkins_updates_downloader:
   pkg.installed:
     - name: curl
@@ -18,33 +25,19 @@ jenkins_updates_file:
   cmd.run:
     - unless: test -f {{ jenkins.home }}/updates/default.json
     - name: "curl -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > {{ jenkins.home }}/updates/default.json"
-
-jenkins_plugin_list:
-  cmd.run:
-    - name: until {{ jenkins.cli }} list-plugins > {{ jenkins.plugins.plugin_list }} 2> /dev/null; do sleep 1; done
-    - env:
-      - JENKINS_URL: {{ jenkins.master_url }}
-    - timeout: 120
     - require:
+      - service: jenkins
+    - watch_in:
       - service: jenkins
 
 {% for plugin in jenkins.plugins.installed %}
 jenkins_install_plugin_{{ plugin }}:
   cmd.run:
-    - unless: grep {{ plugin }} {{ jenkins.plugins.plugin_list }}
-    - name: until {{ jenkins.cli }} install-plugin {{ plugin }}; do sleep 1; done
+    - unless: {{ jenkins_cli('list-plugins', '') }} | grep {{ plugin }}
+    - name: {{ jenkins_cli('install-plugin', plugin) }}
     - timeout: 360
-    - env:
-      - JENKINS_URL: {{ jenkins.master_url }}
     - require:
-      - cmd: jenkins_plugin_list
+      - service: jenkins
+    - watch_in:
+      - service: jenkins
 {% endfor %}
-
-extend:
-  jenkins:
-    service:
-      - watch:
-        - cmd: jenkins_updates_file
-        {% for plugin in jenkins.plugins.installed %}
-        - cmd: jenkins_install_plugin_{{ plugin }}
-        {% endfor %}
