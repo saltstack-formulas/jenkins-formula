@@ -1,3 +1,6 @@
+include:
+  - jenkins
+
 {% from "jenkins/map.jinja" import jenkins with context %}
 
 jenkins_updates_downloader:
@@ -16,12 +19,6 @@ jenkins_updates_file:
     - unless: test -f {{ jenkins.home }}/updates/default.json
     - name: "curl -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > {{ jenkins.home }}/updates/default.json"
 
-jenkins_started:
-  service.running:
-    - name: jenkins
-    - watch:
-      - cmd: jenkins_updates_file
-
 jenkins_plugin_list:
   cmd.run:
     - name: until {{ jenkins.cli }} list-plugins > {{ jenkins.plugins.plugin_list }} 2> /dev/null; do sleep 1; done
@@ -29,7 +26,7 @@ jenkins_plugin_list:
       - JENKINS_URL: {{ jenkins.master_url }}
     - timeout: 120
     - require:
-      - service: jenkins_started
+      - service: jenkins
 
 {% for plugin in jenkins.plugins.installed %}
 jenkins_install_plugin_{{ plugin }}:
@@ -43,10 +40,11 @@ jenkins_install_plugin_{{ plugin }}:
       - cmd: jenkins_plugin_list
 {% endfor %}
 
-jenkins_restart_for_plugins:
-  service.running:
-    - name: jenkins
-    - watch:
-      {% for plugin in jenkins.plugins.installed %}
-      - cmd: jenkins_install_plugin_{{ plugin }}
-      {% endfor %}
+extend:
+  jenkins:
+    service:
+      - watch:
+        - cmd: jenkins_updates_file
+        {% for plugin in jenkins.plugins.installed %}
+        - cmd: jenkins_install_plugin_{{ plugin }}
+        {% endfor %}
