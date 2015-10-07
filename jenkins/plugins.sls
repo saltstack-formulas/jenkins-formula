@@ -10,25 +10,15 @@ include:
 {{ ' '.join([jenkins.cli, fmtarg('-s', jenkins.get('master_url')), fmtarg('-i', jenkins.get('privkey')), cmd, strargs]) }}
 {%- endmacro -%}
 
-jenkins_updates_downloader:
-  pkg.installed:
-    - name: curl
-
-jenkins_updates_directory:
-  file.directory:
-    - name: {{ jenkins.home }}/updates/
-    - user: {{ jenkins.user }}
-    - group: {{ jenkins.group }}
-    - makedirs: True
-
 jenkins_updates_file:
   cmd.run:
+    - onlyif: test -d {{ jenkins.home }}/updates
     - unless: test -f {{ jenkins.home }}/updates/default.json
     - name: "curl -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > {{ jenkins.home }}/updates/default.json"
-    - require:
-      - service: jenkins
-    - watch_in:
-      - service: jenkins
+
+jenkins_plugins_installed:
+  cmd.wait:
+    - name: {{ jenkins_cli('safe-restart', '') }}
 
 {% for plugin in jenkins.plugins.installed %}
 jenkins_install_plugin_{{ plugin }}:
@@ -39,5 +29,5 @@ jenkins_install_plugin_{{ plugin }}:
     - require:
       - service: jenkins
     - watch_in:
-      - service: jenkins
+      - cmd: jenkins_plugins_installed
 {% endfor %}
