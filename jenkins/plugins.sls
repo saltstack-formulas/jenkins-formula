@@ -16,9 +16,13 @@ jenkins_updates_file:
     - unless: test -f {{ jenkins.home }}/updates/default.json
     - name: "curl -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > {{ jenkins.home }}/updates/default.json"
 
-jenkins_plugins_installed:
+restart_jenkins:
   cmd.wait:
     - name: {{ jenkins_cli('safe-restart', '') }}
+
+reload_jenkins_config:
+  cmd.wait:
+    - name: {{ jenkins_cli('reload-configuration', '') }}
 
 {% for plugin in jenkins.plugins.installed %}
 jenkins_install_plugin_{{ plugin }}:
@@ -29,5 +33,16 @@ jenkins_install_plugin_{{ plugin }}:
     - require:
       - service: jenkins
     - watch_in:
-      - cmd: jenkins_plugins_installed
+      - cmd: restart_jenkins
+{% endfor %}
+
+{% for plugin in jenkins.plugins.disabled %}
+jenkins_disable_plugin_{{ plugin }}:
+  file.managed:
+    - name: {{ jenkins.home }}/plugins/{{ plugin }}.jpi.disabled
+    - user: {{ jenkins.user }}
+    - group: {{ jenkins.group }}
+    - contents: ''
+    - watch_in:
+      - cmd: restart_jenkins
 {% endfor %}
