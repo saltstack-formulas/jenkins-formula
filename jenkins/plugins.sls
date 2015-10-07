@@ -13,7 +13,7 @@ jenkins_updates_directory:
 
 jenkins_updates_file:
   cmd.run:
-    - unless: test -f /var/lib/jenkins/updates/default.json
+    - unless: test -f {{ jenkins.home }}/updates/default.json
     - name: "curl -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > {{ jenkins.home }}/updates/default.json"
 
 jenkins_started:
