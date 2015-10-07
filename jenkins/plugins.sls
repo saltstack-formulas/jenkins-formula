@@ -15,6 +15,8 @@ jenkins_updates_file:
     - onlyif: test -d {{ jenkins.home }}/updates
     - unless: test -f {{ jenkins.home }}/updates/default.json
     - name: "curl -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > {{ jenkins.home }}/updates/default.json"
+    - require:
+      - pkg: jenkins
 
 restart_jenkins:
   cmd.wait:
@@ -32,6 +34,7 @@ jenkins_install_plugin_{{ plugin }}:
     - timeout: 360
     - require:
       - service: jenkins
+      - cmd: jenkins_updates_file
     - watch_in:
       - cmd: restart_jenkins
 {% endfor %}
