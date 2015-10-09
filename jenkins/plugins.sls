@@ -6,8 +6,8 @@ include:
 {%- macro fmtarg(prefix, value)-%}
 {{ (prefix + ' ' + value) if value else '' }}
 {%- endmacro -%}
-{%- macro jenkins_cli(cmd, strargs) -%}
-{{ ' '.join(['java', '-jar', jenkins.cli_path, '-s', jenkins.master_url, fmtarg('-i', jenkins.get('privkey')), cmd, strargs]) }}
+{%- macro jenkins_cli(cmd) -%}
+{{ ' '.join(['java', '-jar', jenkins.cli_path, '-s', jenkins.master_url, fmtarg('-i', jenkins.get('privkey')), cmd]) }} {{ ' '.join(varargs) }}
 {%- endmacro -%}
 
 {% set plugin_cache = "{0}/updates/default.json".format(jenkins.home) %}
@@ -25,16 +25,16 @@ jenkins_updates_file:
 
 restart_jenkins:
   cmd.wait:
-    - name: {{ jenkins_cli('safe-restart', '') }}
+    - name: {{ jenkins_cli('safe-restart') }}
 
 reload_jenkins_config:
   cmd.wait:
-    - name: {{ jenkins_cli('reload-configuration', '') }}
+    - name: {{ jenkins_cli('reload-configuration') }}
 
 {% for plugin in jenkins.plugins.installed %}
 jenkins_install_plugin_{{ plugin }}:
   cmd.run:
-    - unless: {{ jenkins_cli('list-plugins', '') }} | grep {{ plugin }}
+    - unless: {{ jenkins_cli('list-plugins') }} | grep {{ plugin }}
     - name: {{ jenkins_cli('install-plugin', plugin) }}
     - timeout: 360
     - require:
