@@ -47,3 +47,15 @@ jenkins_responding:
     - timeout: {{ timeout }}
     - watch:
       - cmd: jenkins_cli_jar
+
+restart_jenkins:
+  cmd.wait:
+    - name: {{ jenkins_cli('safe-restart') }}
+    - require:
+      - cmd: jenkins_responding
+
+reload_jenkins_config:
+  cmd.wait:
+    - name: {{ jenkins_cli('reload-configuration') }}
+    - require:
+      - cmd: jenkins_responding

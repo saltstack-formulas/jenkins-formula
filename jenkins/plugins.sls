@@ -31,18 +31,6 @@ jenkins_updates_file:
       - pkg: jenkins_updates_file
       - file: jenkins_updates_file
 
-restart_jenkins:
-  cmd.wait:
-    - name: {{ jenkins_cli('safe-restart') }}
-    - require:
-      - cmd: jenkins_responding
-
-reload_jenkins_config:
-  cmd.wait:
-    - name: {{ jenkins_cli('reload-configuration') }}
-    - require:
-      - cmd: jenkins_responding
-
 {% for plugin in jenkins.plugins.installed %}
 jenkins_install_plugin_{{ plugin }}:
   cmd.run:
