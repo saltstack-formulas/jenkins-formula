@@ -10,13 +10,18 @@ include:
 {{ ' '.join([jenkins.cli, fmtarg('-s', jenkins.get('master_url')), fmtarg('-i', jenkins.get('privkey')), cmd, strargs]) }}
 {%- endmacro -%}
 
+{% set plugin_cache = "{0}/updates/default.json".format(jenkins.home) %}
+
 jenkins_updates_file:
+  pkg.installed:
+    - name: curl
+
   cmd.run:
-    - onlyif: test -d {{ jenkins.home }}/updates
-    - unless: test -f {{ jenkins.home }}/updates/default.json
-    - name: "curl -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > {{ jenkins.home }}/updates/default.json"
+    - unless: test -f {{ plugin_cache }}
+    - name: "curl -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > {{ plugin_cache }}"
     - require:
       - pkg: jenkins
+      - pkg: jenkins_updates_file
 
 restart_jenkins:
   cmd.wait:
