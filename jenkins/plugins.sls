@@ -7,7 +7,7 @@ include:
 {{ (prefix + ' ' + value) if value else '' }}
 {%- endmacro -%}
 {%- macro jenkins_cli(cmd, strargs) -%}
-{{ ' '.join([jenkins.cli, '-s', jenkins.master_url, fmtarg('-i', jenkins.get('privkey')), cmd, strargs]) }}
+{{ ' '.join(['java', '-jar', jenkins.cli_path, '-s', jenkins.master_url, fmtarg('-i', jenkins.get('privkey')), cmd, strargs]) }}
 {%- endmacro -%}
 
 {% set plugin_cache = "{0}/updates/default.json".format(jenkins.home) %}
