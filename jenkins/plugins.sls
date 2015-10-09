@@ -18,7 +18,7 @@ jenkins_updates_file:
 
   cmd.run:
     - unless: test -f {{ plugin_cache }}
-    - name: "curl -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > {{ plugin_cache }}"
+    - name: "curl -L {{ jenkins.plugins.updates_source }} | sed '1d;$d' > {{ plugin_cache }}"
     - require:
       - pkg: jenkins
       - pkg: jenkins_updates_file
