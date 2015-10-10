@@ -27,6 +27,8 @@ script:
   - sudo -E salt-call state.show_sls $STATE $SALT_ARGS
   - sudo -E salt-call state.sls $STATE $SALT_ARGS
 
+  - sudo iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+
   # Idempotence check
   - sudo -E salt-call state.sls $STATE $SALT_ARGS > /tmp/second
   - cat /tmp/second
