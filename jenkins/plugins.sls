@@ -13,6 +13,12 @@ include:
 {% set plugin_cache = "{0}/updates/default.json".format(jenkins.home) %}
 
 jenkins_updates_file:
+  file.directory:
+    - name: {{ "{0}/updates".format(jenkins.home) }}
+    - user: {{ jenkins.user }}
+    - group: {{ jenkins.group }}
+    - mode: 755
+
   pkg.installed:
     - name: curl
 
@@ -22,6 +28,7 @@ jenkins_updates_file:
     - require:
       - pkg: jenkins
       - pkg: jenkins_updates_file
+      - file: jenkins_updates_file
 
 restart_jenkins:
   cmd.wait:
