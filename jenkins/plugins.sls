@@ -33,6 +33,13 @@ jenkins_serving:
     - watch:
       - cmd: jenkins_listening
 
+jenkins_responding:
+  cmd.wait:
+    - name: "until {{ jenkins_cli('who-am-i') }}; do sleep 1; done"
+    - timeout: 60
+    - watch:
+      - cmd: jenkins_serving
+
 jenkins_updates_file:
   file.directory:
     - name: {{ "{0}/updates".format(jenkins.home) }}
@@ -55,7 +62,7 @@ restart_jenkins:
   cmd.wait:
     - name: {{ jenkins_cli('safe-restart') }}
     - require:
-      - cmd: jenkins_serving
+      - cmd: jenkins_responding
 
 reload_jenkins_config:
   cmd.wait:
