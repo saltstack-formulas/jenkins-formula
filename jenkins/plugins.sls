@@ -12,6 +12,27 @@ include:
 
 {% set plugin_cache = "{0}/updates/default.json".format(jenkins.home) %}
 
+jenkins_listening:
+  pkg.installed:
+    - name: {{ jenkins.netcat_pkg }}
+  cmd.wait:
+    - name: "until nc -z localhost {{ jenkins.jenkins_port }}; do sleep 1; done"
+    - timeout: 10
+    - require:
+      - service: jenkins
+    - watch:
+      - service: jenkins
+
+jenkins_serving:
+  pkg.installed:
+    - name: curl
+
+  cmd.wait:
+    - name: "until (curl -I -L {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar | grep \"Content-Type: application/java-archive\"); do sleep 1; done"
+    - timeout: 60
+    - watch:
+      - cmd: jenkins_listening
+
 jenkins_updates_file:
   file.directory:
     - name: {{ "{0}/updates".format(jenkins.home) }}
@@ -33,10 +54,14 @@ jenkins_updates_file:
 restart_jenkins:
   cmd.wait:
     - name: {{ jenkins_cli('safe-restart') }}
+    - require:
+      - cmd: jenkins_serving
 
 reload_jenkins_config:
   cmd.wait:
     - name: {{ jenkins_cli('reload-configuration') }}
+    - require:
+      - cmd: jenkins_serving
 
 {% for plugin in jenkins.plugins.installed %}
 jenkins_install_plugin_{{ plugin }}:
@@ -47,6 +72,7 @@ jenkins_install_plugin_{{ plugin }}:
     - require:
       - service: jenkins
       - cmd: jenkins_updates_file
+      - cmd: jenkins_serving
     - watch_in:
       - cmd: restart_jenkins
 {% endfor %}

@@ -1,10 +1,12 @@
 {% set jenkins = salt['grains.filter_by']({
     'default': {
         'pkgs': ['jenkins'],
+        'netcat_pkg': 'netcat-openbsd',
         'user': 'jenkins',
         'group': 'jenkins',
         'home': '/var/lib/jenkins',
         'port': '80',
+        'jenkins_port': 8080,
         'server_name': None,
         'cli_path': '/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar',
         'master_url': 'http://localhost:8080',
