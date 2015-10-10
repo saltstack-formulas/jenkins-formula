@@ -14,6 +14,7 @@ env:
   matrix:
     - STATE=jenkins
     - STATE=jenkins,nginx,jenkins.nginx
+    - STATE=jenkins,jenkins.plugins
 
 before_install:
   - sudo apt-get update
@@ -29,6 +30,8 @@ install:
 script:
   - sudo -E salt-call state.show_sls $STATE $SALT_ARGS
   - sudo -E salt-call state.sls $STATE $SALT_ARGS
+
+  - sudo iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
 
   # Idempotence check
   - sudo -E salt-call state.sls $STATE $SALT_ARGS > /tmp/second

@@ -1,9 +1,13 @@
 jenkins:
   lookup:
     port: 80
-    home: /usr/local/jenkins
+    home: /var/lib/jenkins
     user: jenkins
     group: www-data
-    server_name: ci.example.com
+    server_name: localhost
+    master_url: http://localhost:8080
+    plugins:
+      installed:
+        - greenballs
     pkgs:
       - jenkins
