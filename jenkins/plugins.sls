@@ -11,6 +11,7 @@ include:
 {%- endmacro -%}
 
 {% set plugin_cache = "{0}/updates/default.json".format(jenkins.home) %}
+{% set timeout = 360 %}
 
 jenkins_listening:
   pkg.installed:
@@ -29,16 +30,27 @@ jenkins_serving:
 
   cmd.wait:
     - name: "until (curl -I -L {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar | grep \"Content-Type: application/java-archive\"); do sleep 1; done"
-    - timeout: 60
+    - timeout: {{ timeout }}
     - watch:
       - cmd: jenkins_listening
+
+jenkins_cli_jar:
+  pkg.installed:
+    - name: curl
+
+  cmd.run:
+    - unless: test -f {{ jenkins.cli_path }}
+    - name: "curl -L -o {{ jenkins.cli_path }} {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar"
+    - require:
+      - pkg: jenkins_cli_jar
+      - cmd: jenkins_serving
 
 jenkins_responding:
   cmd.wait:
     - name: "until {{ jenkins_cli('who-am-i') }}; do sleep 1; done"
-    - timeout: 60
+    - timeout: {{ timeout }}
     - watch:
-      - cmd: jenkins_serving
+      - cmd: jenkins_cli_jar
 
 jenkins_updates_file:
   file.directory:
@@ -68,18 +80,18 @@ reload_jenkins_config:
   cmd.wait:
     - name: {{ jenkins_cli('reload-configuration') }}
     - require:
-      - cmd: jenkins_serving
+      - cmd: jenkins_responding
 
 {% for plugin in jenkins.plugins.installed %}
 jenkins_install_plugin_{{ plugin }}:
   cmd.run:
     - unless: {{ jenkins_cli('list-plugins') }} | grep {{ plugin }}
     - name: {{ jenkins_cli('install-plugin', plugin) }}
-    - timeout: 360
+    - timeout: {{ timeout }}
     - require:
       - service: jenkins
       - cmd: jenkins_updates_file
-      - cmd: jenkins_serving
+      - cmd: jenkins_responding
     - watch_in:
       - cmd: restart_jenkins
 {% endfor %}
