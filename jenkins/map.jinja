@@ -17,5 +17,9 @@
             'installed': [],
             'disabled': [],
         },
+        'jobs': {
+            'installed': {},
+            'absent': []
+        }
     },
 }, merge=salt['pillar.get']('jenkins:lookup')) %}
