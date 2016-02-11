@@ -32,6 +32,7 @@ jenkins:
     - baseurl: http://pkg.jenkins-ci.org/redhat
     - gpgkey: http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
     {% elif grains['os_family'] == 'Debian' %}
+    - file: {{jenkins.deb_apt_source}}
     - name: deb http://pkg.jenkins-ci.org/debian binary/
     - key_url: http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key
     {% endif %}
