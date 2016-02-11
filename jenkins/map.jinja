@@ -1,6 +1,7 @@
 {% set jenkins = salt['grains.filter_by']({
     'default': {
         'pkgs': ['jenkins'],
+        'deb_apt_source': '/etc/apt/sources.list.d/jenkins-ci.list',
         'netcat_pkg': 'netcat-openbsd',
         'user': 'jenkins',
         'group': 'jenkins',
