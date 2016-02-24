@@ -12,7 +12,7 @@
         'jenkins_port': 8080,
         'server_name': None,
         'cli_path': '/var/cache/jenkins/jenkins-cli.jar',
-        'master_url': 'http://{{ salt.cmd.run('/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'') }}:8080',
+        'master_url': 'http://127.0.0.1:8080',
         'plugins': {
             'updates_source': 'http://updates.jenkins-ci.org/update-center.json',
             'installed': [],
