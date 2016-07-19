@@ -1,19 +1,18 @@
 {% from "jenkins/map.jinja" import jenkins with context %}
-
-{%- macro fmtarg(prefix, value)-%}
-{{ (prefix + ' ' + value) if value else '' }}
-{%- endmacro -%}
-{%- macro jenkins_cli(cmd) -%}
-{{ ' '.join(['java', '-jar', jenkins.cli_path, '-s', jenkins.master_url, fmtarg('-i', jenkins.get('privkey')), cmd]) }} {{ ' '.join(varargs) }}
-{%- endmacro -%}
+{% import "jenkins/macros/cli_macro.jinja" as cli_macro %}
 
 {% set timeout = 360 %}
+{% if grains['os_family'] == 'RedHat' %}
+  {% set listening_tool = "curl" %}
+{% else %}
+  {% set listening_tool = jenkins.netcat_pkg %}
+{% endif %}
 
 jenkins_listening:
   pkg.installed:
-    - name: {{ jenkins.netcat_pkg }}
+    - name: listening_tool
   cmd.wait:
-    - name: "until nc -z localhost {{ jenkins.jenkins_port }}; do sleep 1; done"
+    - name: "until {{ cli_macro.jenkins_listen() }}; do sleep 1; done"
     - timeout: 10
     - require:
       - service: jenkins
@@ -43,19 +42,19 @@ jenkins_cli_jar:
 
 jenkins_responding:
   cmd.wait:
-    - name: "until {{ jenkins_cli('who-am-i') }}; do sleep 1; done"
+    - name: "until {{ cli_macro.jenkins_cli('who-am-i') }}; do sleep 1; done"
     - timeout: {{ timeout }}
     - watch:
       - cmd: jenkins_cli_jar
 
 restart_jenkins:
   cmd.wait:
-    - name: {{ jenkins_cli('safe-restart') }}
+    - name: {{ cli_macro.jenkins_cli('safe-restart') }}
     - require:
       - cmd: jenkins_responding
 
 reload_jenkins_config:
   cmd.wait:
-    - name: {{ jenkins_cli('reload-configuration') }}
+    - name: {{ cli_macro.jenkins_cli('reload-configuration') }}
     - require:
       - cmd: jenkins_responding
