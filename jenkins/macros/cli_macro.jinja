@@ -9,6 +9,12 @@
 {{ ' '.join(['java', '-jar', jenkins.cli_path, '-s', jenkins.master_url, fmtarg('-i', jenkins.get('privkey')), cmd]) }} {{ ' '.join(varargs) }}
 {%- endmacro -%}
 
-{%- macro jenkins_listen() -%}
-{{ ' '.join(['curl', jenkins.master_url]) }}
-{%- endmacro -%}
+{% if grains['os_family'] == 'RedHat' %}
+  {%- macro jenkins_listen() -%}
+  {{ ' '.join(['curl', jenkins.master_url]) }}
+  {%- endmacro -%}
+{% else %}
+  {%- macro jenkins_listen() -%}
+  {{ ' '.join(['nc', '-z', 'localhost', jenkins.jenkins_port]) }}
+  {%- endmacro -%}
+{% endif %}
