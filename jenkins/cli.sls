@@ -5,12 +5,12 @@
 {% if grains['os_family'] == 'RedHat' %}
   {% set listening_tool = "curl" %}
 {% else %}
-  {% set listening_tool = jenkins.netcat_pkg %}
+  {% set listening_tool = enkins.netcat_pkg %}
 {% endif %}
 
 jenkins_listening:
   pkg.installed:
-    - name: listening_tool
+    - name: {{ listening_tool }}
   cmd.wait:
     - name: "until {{ cli_macro.jenkins_listen() }}; do sleep 1; done"
     - timeout: 10
