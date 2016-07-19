@@ -15,6 +15,6 @@
   {%- endmacro -%}
 {% else %}
   {%- macro jenkins_listen() -%}
-  {{ ' '.join(['nc', '-z', 'localhost', jenkins.jenkins_port]) }}
+  {{ ' '.join(['nc', '-z', 'localhost', jenkins.jenkins_port|string]) }}
   {%- endmacro -%}
 {% endif %}
