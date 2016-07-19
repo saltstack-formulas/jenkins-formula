@@ -5,7 +5,7 @@
 {% if grains['os_family'] == 'RedHat' %}
   {% set listening_tool = "curl" %}
 {% else %}
-  {% set listening_tool = enkins.netcat_pkg %}
+  {% set listening_tool = jenkins.netcat_pkg %}
 {% endif %}
 
 jenkins_listening:
