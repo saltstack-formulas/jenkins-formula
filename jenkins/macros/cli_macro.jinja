@@ -10,5 +10,5 @@
 {%- endmacro -%}
 
 {%- macro jenkins_listen() -%}
-{{ ' '.join(['curl', jenkins.master_url + ':' + jenkins.jenkins_port|string]) }}
+{{ ' '.join(['curl', jenkins.master_url) }}
 {%- endmacro -%}
