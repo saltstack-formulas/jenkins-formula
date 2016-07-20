@@ -11,7 +11,7 @@
 
 {% if grains['os_family'] == 'RedHat' %}
   {%- macro jenkins_listen() -%}
-  {{ ' '.join(['curl', jenkins.master_url]) }}
+  {{ ' '.join(['curl', '-I', jenkins.master_url]) }}
   {%- endmacro -%}
 {% else %}
   {%- macro jenkins_listen() -%}

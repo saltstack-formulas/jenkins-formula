@@ -1,7 +1,7 @@
 {% from "jenkins/map.jinja" import jenkins with context %}
 {% import "jenkins/macros/cli_macro.jinja" as cli_macro %}
 
-{% set timeout = 360 %}
+{% set timeout = jenkins.timeout_sec %}
 {% if grains['os_family'] == 'RedHat' %}
   {% set listening_tool = "curl" %}
 {% else %}
@@ -13,7 +13,7 @@ jenkins_listening:
     - name: {{ listening_tool }}
   cmd.wait:
     - name: "until {{ cli_macro.jenkins_listen() }}; do sleep 1; done"
-    - timeout: 10
+    - timeout: {{ timeout }}
     - require:
       - service: jenkins
     - watch:
@@ -40,12 +40,18 @@ jenkins_cli_jar:
       - pkg: jenkins_cli_jar
       - cmd: jenkins_serving
 
+jenkins_login:
+  cmd.run:
+    - name: "java -jar {{ jenkins.cli_path }} -s {{ jenkins.master_url }} login --username {{ jenkins.admin_user }} --password {{ jenkins.admin_pw }}"
+    - require:
+      - cmd: jenkins_cli_jar
+
 jenkins_responding:
   cmd.wait:
     - name: "until {{ cli_macro.jenkins_cli('who-am-i') }}; do sleep 1; done"
     - timeout: {{ timeout }}
     - watch:
-      - cmd: jenkins_cli_jar
+      - cmd: jenkins_login
 
 restart_jenkins:
   cmd.wait:
@@ -57,4 +63,4 @@ reload_jenkins_config:
   cmd.wait:
     - name: {{ cli_macro.jenkins_cli('reload-configuration') }}
     - require:
-      - cmd: jenkins_responding
+      - cmd: restart_jenkins

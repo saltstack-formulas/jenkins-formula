@@ -16,7 +16,7 @@ jenkins_install_job_{{ job }}:
   cmd.run:
     - unless: {{ jenkins_cli('list-jobs') }} | grep {{ job }}
     - name: {{ jenkins_cli('create-job', job, '<', path) }}
-    - timeout: 360
+    - timeout: {{ jenkins.timeout_sec }}
     - require:
       - service: jenkins
       - cmd: jenkins_updates_file

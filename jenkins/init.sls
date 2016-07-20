@@ -45,3 +45,4 @@ jenkins:
     - enable: True
     - watch:
       - pkg: jenkins
+      - file: /var/lib/jenkins/*
