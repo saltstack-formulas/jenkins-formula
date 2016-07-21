@@ -11,34 +11,26 @@
 jenkins_listening:
   pkg.installed:
     - name: {{ listening_tool }}
-  cmd.wait:
+  cmd.run:
     - name: "until {{ cli_macro.jenkins_listen() }}; do sleep 1; done"
-    - timeout: {{ timeout }}
     - require:
-      - service: jenkins
-    - watch:
-      - service: jenkins
+      - pkg: jenkins_listening
 
 jenkins_serving:
-  pkg.installed:
-    - name: curl
-
-  cmd.wait:
+  cmd.run:
     - name: "until (curl -I -L {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar | grep \"Content-Type: application/java-archive\"); do sleep 1; done"
-    - timeout: {{ timeout }}
-    - watch:
+    - require:
       - cmd: jenkins_listening
 
 jenkins_cli_jar:
   pkg.installed:
     - name: curl
-
+    - require:
+      - cmd: jenkins_serving
   cmd.run:
-    - unless: test -f {{ jenkins.cli_path }}
     - name: "curl -L -o {{ jenkins.cli_path }} {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar"
     - require:
       - pkg: jenkins_cli_jar
-      - cmd: jenkins_serving
 
 jenkins_login:
   cmd.run:
@@ -47,20 +39,7 @@ jenkins_login:
       - cmd: jenkins_cli_jar
 
 jenkins_responding:
-  cmd.wait:
+  cmd.run:
     - name: "until {{ cli_macro.jenkins_cli('who-am-i') }}; do sleep 1; done"
-    - timeout: {{ timeout }}
-    - watch:
+    - require:
       - cmd: jenkins_login
-
-restart_jenkins:
-  cmd.wait:
-    - name: {{ cli_macro.jenkins_cli('safe-restart') }}
-    - require:
-      - cmd: jenkins_responding
-
-reload_jenkins_config:
-  cmd.wait:
-    - name: {{ cli_macro.jenkins_cli('reload-configuration') }}
-    - require:
-      - cmd: restart_jenkins
