@@ -1,7 +1,6 @@
 {% from "jenkins/map.jinja" import jenkins with context %}
 {% import "jenkins/macros/cli_macro.jinja" as cli_macro %}
 
-{% set timeout = jenkins.timeout_sec %}
 {% if grains['os_family'] == 'RedHat' %}
   {% set listening_tool = "curl" %}
 {% else %}
@@ -9,12 +8,8 @@
 {% endif %}
 
 jenkins_listening:
-  pkg.installed:
-    - name: {{ listening_tool }}
   cmd.run:
     - name: "until {{ cli_macro.jenkins_listen() }}; do sleep 1; done"
-    - require:
-      - pkg: jenkins_listening
 
 jenkins_serving:
   cmd.run:
@@ -23,14 +18,10 @@ jenkins_serving:
       - cmd: jenkins_listening
 
 jenkins_cli_jar:
-  pkg.installed:
-    - name: curl
-    - require:
-      - cmd: jenkins_serving
   cmd.run:
     - name: "curl -L -o {{ jenkins.cli_path }} {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar"
     - require:
-      - pkg: jenkins_cli_jar
+      - cmd: jenkins_serving
 
 jenkins_login:
   cmd.run:

@@ -8,7 +8,7 @@ get_jenkins_config_from_git:
     - target: {{ jenkins.home }}
     - force_clone: True
     - require:
-      - service: jenkins
+      - sls: jenkins
 
 change_file_ownership_of_JENKINS_HOME:
   file.directory:
