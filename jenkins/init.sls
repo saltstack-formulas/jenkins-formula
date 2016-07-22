@@ -19,7 +19,7 @@ jenkins_user:
     - name: {{ jenkins.home }}
     - user: {{ jenkins.user }}
     - group: {{ jenkins.group }}
-    - mode: 0755
+    - mode: 755
     - require:
       - user: jenkins_user
 
