@@ -1,5 +1,6 @@
 {% from "jenkins/map.jinja" import jenkins with context %}
 
+# Always create the group first before creating the user within that group.
 jenkins_group:
   group.present:
     - name: {{ jenkins.group }}

@@ -17,6 +17,7 @@ jenkins_serving:
     - require:
       - cmd: jenkins_listening
 
+# Download the Jenkins CLI jar file
 jenkins_cli_jar:
   cmd.run:
     - name: "curl -L -o {{ jenkins.cli_path }} {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar"
