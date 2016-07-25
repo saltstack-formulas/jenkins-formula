@@ -28,15 +28,17 @@ The sls file of agent.sls runs for this state.
 
 ### State: jenkins.cli
 
-The sls file of cli.sls runs for this state. It is rarely used on its own but as a help for plugins.sls.
+The sls file of cli.sls runs for this state.
+
+It is rarely used on its own but as a help for plugins.sls and jobs.sls.
 
 Due to differences in the scope of functionality of netcat between RedHat and Debian/other Linux distributions, nc -z does not work on RedHat since the option -z simply does not exist. Hence by default, RedHat distro will use curl instead. If you are on Debian distro, please feel free to use a custom versin of netcat. You can define that in your pillar file as netcat_pkg: your_nc_package.
 
 1. Listen to Jenkins server.
 2. Find out if it is serving data.
 3. Download the Jenkins CLI jar file.
-4. Login with the preconfigured admin user and password.
-5. Find out if Jenkins is responding with the Jenkins CLI.
+4. Login with the pre-configured admin user and password.
+5. Find out if Jenkins is responding with Jenkins CLI.
 
 ### State: jenkins.config
 

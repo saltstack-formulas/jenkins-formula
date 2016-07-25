@@ -7,31 +7,31 @@
   {% set listening_tool = jenkins.netcat_pkg %}
 {% endif %}
 
-jenkins_listening:
+check_if_jenkins_server_runs:
   cmd.run:
     - name: "until {{ cli_macro.jenkins_listen() }}; do sleep 1; done"
 
-jenkins_serving:
+check_if_jenkins_serves_cli:
   cmd.run:
     - name: "until (curl -I -L {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar | grep \"Content-Type: application/java-archive\"); do sleep 1; done"
     - require:
-      - cmd: jenkins_listening
+      - cmd: check_if_jenkins_server_runs
 
 # Download the Jenkins CLI jar file
-jenkins_cli_jar:
+download_jenkins_cli_jar:
   cmd.run:
     - name: "curl -L -o {{ jenkins.cli_path }} {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar"
     - require:
-      - cmd: jenkins_serving
+      - cmd: check_if_jenkins_serves_cli
 
-jenkins_login:
+login_to_jenkins_using_cli:
   cmd.run:
     - name: "java -jar {{ jenkins.cli_path }} -s {{ jenkins.master_url }} login --username {{ jenkins.admin_user }} --password {{ jenkins.admin_pw }}"
     - require:
-      - cmd: jenkins_cli_jar
+      - cmd: download_jenkins_cli_jar
 
-jenkins_responding:
+check_if_jenkins_cli_works:
   cmd.run:
     - name: "until {{ cli_macro.jenkins_cli('who-am-i') }}; do sleep 1; done"
     - require:
-      - cmd: jenkins_login
+      - cmd: login_to_jenkins_using_cli
