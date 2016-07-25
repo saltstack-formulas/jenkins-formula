@@ -32,11 +32,11 @@ The sls file of cli.sls runs for this state. It is rarely used on its own but as
 
 Due to differences in the scope of functionality of netcat between RedHat and Debian/other Linux distributions, nc -z does not work on RedHat since the option -z simply does not exist. Hence by default, RedHat distro will use curl instead. If you are on Debian distro, please feel free to use a custom versin of netcat. You can define that in your pillar file as netcat_pkg: your_nc_package.
 
-1. Listen to Jenkins server
-2. Find out if it is serving data
-3. Download the Jenkins CLI jar file
-4. Login with the preconfigured admin user and password
-5. Find out if Jenkins is responding with the Jenkins CLI
+1. Listen to Jenkins server.
+2. Find out if it is serving data.
+3. Download the Jenkins CLI jar file.
+4. Login with the preconfigured admin user and password.
+5. Find out if Jenkins is responding with the Jenkins CLI.
 
 ### State: jenkins.config
 
@@ -56,10 +56,11 @@ The sls file of jobs.sls runs for this state.
 
 The sls file of nginx.sls runs for this state.
 
-1. Add a jenkins nginx entry.
-2. It depends on the nginx formula being installed and
-requires manual inclusion `nginx` and `jenkins` states in your `top.sls` to
-function, in this order: `jenkins`, `nginx`, `jenkins.nginx`.
+This state is designed for Redhat OS family as a default. If you are on Debian, please change the nginx_user and nginx_group to www-data in your pillar. There are two sets of different nginx configuration files in jenkins/files. Each one is designed specifically for an OS family. Currently, only Debian and Redhat OS families are supported, although the Debian version would work for most other Linux OS distributions.
+
+1. Installation of nginx.
+2. Add a jenkins nginx entry for reverse proxy.
+3. Restart nginx.
 
 ### State: jenkins.plugins
 
