@@ -14,7 +14,7 @@ include:
 
 {% set plugin_cache = "{0}/updates/default.json".format(jenkins.home) %}
 
-jenkins_updates_file:
+get_new_jenkins_plugins_registry:
   file.directory:
     - name: {{ "{0}/updates".format(jenkins.home) }}
     - user: {{ jenkins.user }}
@@ -27,14 +27,14 @@ jenkins_updates_file:
     - unless: test -f {{ plugin_cache }}
     - name: "curl -L {{ jenkins.plugins.updates_source }} | sed '1d;$d' > {{ plugin_cache }}"
     - require:
-      - file: jenkins_updates_file
+      - file: get_new_jenkins_plugins_registry
 
 {% for plugin in jenkins.plugins.installed %}
 jenkins_install_plugin_{{ plugin }}:
   cmd.run:
     - name: {{ jenkins_cli('install-plugin', plugin) }}
     - require:
-      - cmd: jenkins_updates_file
+      - cmd: get_new_jenkins_plugins_registry
     - watch_in:
       - service: restart_jenkins_after_plugins_installation
 {% endfor %}
@@ -47,7 +47,9 @@ jenkins_disable_plugin_{{ plugin }}:
     - group: {{ jenkins.group }}
     - contents: ''
     - require:
-      - cmd: jenkins_updates_file
+      - cmd: get_new_jenkins_plugins_registry
+    - watch_in:
+      - service: restart_jenkins_after_plugins_installation
 {% endfor %}
 
 restart_jenkins_after_plugins_installation:
