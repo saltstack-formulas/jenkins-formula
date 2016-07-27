@@ -25,6 +25,9 @@ The sls file of init.sls runs for this state.
 The sls file of agent.sls runs for this state.
 
 1. Create the appropriate settings for Jenkins agent without installing a Jenkins master. This can be separately used by any independent Jenkins agent setup.
+2. Install the public key so that the Jenkins master can connect to this agent.
+
+Please read on the section on jenkins.master to understand the connection between that and this state.
 
 ### State: jenkins.cli
 
@@ -54,6 +57,15 @@ The sls file of jobs.sls runs for this state.
 
 1. Programmatically add states for jobs that you define in the pillar file.
 
+### State: jenkins.master
+
+The sls file of master.sls runs for this state.
+
+1. Create the .ssh directory to store the private key.
+2. Deploy the private key so that connection with agent is possible.
+
+You still need to connect the node for the Jenkins agent within the Jenkins master your self via the Web GUI but the difficult part of setting up the keys and making things work with a simple setup is done with this state.
+
 ### State: jenkins.nginx
 
 The sls file of nginx.sls runs for this state.
@@ -68,8 +80,8 @@ This state is designed for Redhat OS family as a default. If you are on Debian, 
 
 The sls file of plugins.sls runs for this state.
 
-1. Updates the plugins list of versioning from the Jenkins server.
-2. Programmatically generates states depending on the entries in pillar for plugins to be installed or disabled.
+1. Update the plugins list of versioning from the Jenkins server.
+2. Programmatically generate states depending on the entries in pillar for plugins to be installed or disabled.
 3. Restart Jenkins service after the last plugin installation.
 
 ## Pillar Customisations
