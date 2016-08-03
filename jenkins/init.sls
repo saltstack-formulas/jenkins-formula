@@ -1,5 +1,12 @@
 {% from "jenkins/map.jinja" import jenkins with context %}
 
+make_sure_global_dependencies_are_installed:
+  pkg.installed:
+    - pkgs:
+      - curl
+      - git
+      - java-1.8.0-openjdk
+
 # Always create the group first before creating the user within that group.
 create_jenkins_group:
   group.present:
