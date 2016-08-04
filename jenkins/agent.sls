@@ -22,7 +22,8 @@ deploy_private_key_on_agent:
   file.managed:
     # The public key is on agent and in the file authorized_keys
     - name: {{ jenkins.home }}/.ssh/authorized_keys
-    - source: salt://jenkins/keys/jenkins_agent_key.pub
+    # Set here the location of the pillar item where you have stored your key
+    - contents_pillar: jenkins:agent:public_key
     - user: {{ jenkins.user }}
     - group: {{ jenkins.group }}
     - mode: 640

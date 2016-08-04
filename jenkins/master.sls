@@ -13,7 +13,8 @@ deploy_private_key_on_master:
   file.managed:
     # The private key is on master
     - name: {{ jenkins.home }}/.ssh/id_rsa
-    - source: salt://jenkins/keys/jenkins_agent_key
+    # Set here the location of the pillar item where you have stored your key
+    - contents_pillar: jenkins:master:private_key
     - user: {{ jenkins.user }}
     - group: {{ jenkins.group }}
     - mode: 700
