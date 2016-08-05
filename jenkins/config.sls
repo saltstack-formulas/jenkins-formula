@@ -25,6 +25,8 @@ get_jenkins_config_from_git:
   git.latest:
     - name: {{ jenkins.jenkins_config_git_repo }}
     - target: {{ jenkins.home }}
+    - rev: {{ jenkins.git_rev }}
+    - branch: {{ jenkins.git_local_branch }}
     - force_clone: True
     - https_user: {{ jenkins.git_https_user }}
     - https_pass: {{ jenkins.git_https_pass }}
