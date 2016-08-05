@@ -17,6 +17,6 @@ deploy_private_key_on_master:
     - contents_pillar: jenkins:master:private_key
     - user: {{ jenkins.user }}
     - group: {{ jenkins.group }}
-    - mode: 700
+    - mode: 600
     - require:
       - file: create_ssh_directory_on_master
