@@ -31,6 +31,7 @@ get_jenkins_config_from_git:
     - identity: {{ jenkins.git_ssh_key_uri }}
     - require:
       - file: deploy_private_key_for_git_auth
+    - unless: git rev-parse --resolve-git-dir {{ jenkins.home }}/.git
 
 change_file_ownership_of_JENKINS_HOME:
   file.directory:
@@ -40,8 +41,9 @@ change_file_ownership_of_JENKINS_HOME:
     - recurse:
       - user
       - group
-    - require:
+    - watch:
       - git: get_jenkins_config_from_git
+    - unless: stat -c '%U' {{ jenkins.home }} | grep jenkins
 
 restart_jenkins_when_config_changes:
   service.running:

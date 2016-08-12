@@ -37,6 +37,7 @@ jenkins_install_plugin_{{ plugin }}:
       - cmd: get_new_jenkins_plugins_registry
     - watch_in:
       - service: restart_jenkins_after_plugins_installation
+    - unless: {{ jenkins_cli('list-plugins') }} | grep {{ plugin }}
 {% endfor %}
 
 {% for plugin in jenkins.plugins.disabled %}
