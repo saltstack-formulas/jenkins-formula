@@ -49,9 +49,3 @@ restart_jenkins_when_config_changes:
     - watch:
       - git: get_jenkins_config_from_git
       - file: change_file_ownership_of_JENKINS_HOME
-
-#restart_jenkins_with_systemctl:
-#  cmd.run:
-#    - name: "systemctl restart jenkins"
-#    - watch:
-#      - file: change_file_ownership_of_JENKINS_HOME
