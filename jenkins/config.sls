@@ -1,6 +1,4 @@
 {% from "jenkins/map.jinja" import jenkins with context %}
-# include:
-#   - jenkins
 
 create_ssh_directory_for_git_auth:
   file.directory:
@@ -45,8 +43,15 @@ change_file_ownership_of_JENKINS_HOME:
     - require:
       - git: get_jenkins_config_from_git
 
-restart_jenkins_with_systemctl:
-  cmd.run:
-    - name: "systemctl restart jenkins"
+restart_jenkins_when_config_changes:
+  service.running:
+    - name: jenkins
     - watch:
+      - git: get_jenkins_config_from_git
       - file: change_file_ownership_of_JENKINS_HOME
+
+#restart_jenkins_with_systemctl:
+#  cmd.run:
+#    - name: "systemctl restart jenkins"
+#    - watch:
+#      - file: change_file_ownership_of_JENKINS_HOME
