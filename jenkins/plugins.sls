@@ -3,6 +3,7 @@ include:
   - jenkins.cli
 
 {% from "jenkins/map.jinja" import jenkins with context %}
+{% import "jenkins/macros/cli_macro.jinja" as cli_macro %}
 
 {%- macro fmtarg(prefix, value)-%}
 {{ (prefix + ' ' + value) if value else '' }}
@@ -13,36 +14,30 @@ include:
 
 {% set plugin_cache = "{0}/updates/default.json".format(jenkins.home) %}
 
-jenkins_updates_file:
+get_new_jenkins_plugins_registry:
   file.directory:
     - name: {{ "{0}/updates".format(jenkins.home) }}
     - user: {{ jenkins.user }}
     - group: {{ jenkins.group }}
     - mode: 755
-
-  pkg.installed:
-    - name: curl
-
+    - require:
+      - sls: jenkins
+      - sls: jenkins.cli
   cmd.run:
     - unless: test -f {{ plugin_cache }}
     - name: "curl -L {{ jenkins.plugins.updates_source }} | sed '1d;$d' > {{ plugin_cache }}"
     - require:
-      - pkg: jenkins
-      - pkg: jenkins_updates_file
-      - file: jenkins_updates_file
+      - file: get_new_jenkins_plugins_registry
 
 {% for plugin in jenkins.plugins.installed %}
 jenkins_install_plugin_{{ plugin }}:
   cmd.run:
-    - unless: {{ jenkins_cli('list-plugins') }} | grep {{ plugin }}
     - name: {{ jenkins_cli('install-plugin', plugin) }}
-    - timeout: 60
     - require:
-      - service: jenkins
-      - cmd: jenkins_updates_file
-      - cmd: jenkins_responding
+      - cmd: get_new_jenkins_plugins_registry
     - watch_in:
-      - cmd: restart_jenkins
+      - service: restart_jenkins_after_plugins_installation
+    - unless: {{ jenkins_cli('list-plugins') }} | grep {{ plugin }}
 {% endfor %}
 
 {% for plugin in jenkins.plugins.disabled %}
@@ -52,6 +47,12 @@ jenkins_disable_plugin_{{ plugin }}:
     - user: {{ jenkins.user }}
     - group: {{ jenkins.group }}
     - contents: ''
+    - require:
+      - cmd: get_new_jenkins_plugins_registry
     - watch_in:
-      - cmd: restart_jenkins
+      - service: restart_jenkins_after_plugins_installation
 {% endfor %}
+
+restart_jenkins_after_plugins_installation:
+  service.running:
+    - name: jenkins

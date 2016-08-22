@@ -1,61 +1,44 @@
 {% from "jenkins/map.jinja" import jenkins with context %}
+{% import "jenkins/macros/cli_macro.jinja" as cli_macro %}
 
-{%- macro fmtarg(prefix, value)-%}
-{{ (prefix + ' ' + value) if value else '' }}
-{%- endmacro -%}
-{%- macro jenkins_cli(cmd) -%}
-{{ ' '.join(['java', '-jar', jenkins.cli_path, '-s', jenkins.master_url, fmtarg('-i', jenkins.get('privkey')), cmd]) }} {{ ' '.join(varargs) }}
-{%- endmacro -%}
+{% if grains['os_family'] == 'RedHat' %}
+  {% set listening_tool = "curl" %}
+{% else %}
+  {% set listening_tool = jenkins.netcat_pkg %}
+{% endif %}
 
-{% set timeout = 360 %}
-
-jenkins_listening:
-  pkg.installed:
-    - name: {{ jenkins.netcat_pkg }}
-  cmd.wait:
-    - name: "until nc -z localhost {{ jenkins.jenkins_port }}; do sleep 1; done"
-    - timeout: 10
-    - require:
-      - service: jenkins
-    - watch:
-      - service: jenkins
-
-jenkins_serving:
-  pkg.installed:
-    - name: curl
-
-  cmd.wait:
-    - name: "until (curl -I -L {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar | grep \"Content-Type: application/java-archive\"); do sleep 1; done"
-    - timeout: {{ timeout }}
-    - watch:
-      - cmd: jenkins_listening
-
-jenkins_cli_jar:
-  pkg.installed:
-    - name: curl
-
+# Always check if jenkins server is running when applying
+# this sls state to the server on a scheduled basis.
+# If there is an error, then an appropriate response can be implemented.
+check_if_jenkins_server_runs:
   cmd.run:
-    - unless: test -f {{ jenkins.cli_path }}
+    - name: "until {{ cli_macro.jenkins_listen() }}; do sleep 1; done"
+
+# Trivial checks should always run.
+check_if_jenkins_serves_cli:
+  cmd.run:
+    - name: "until (curl -I -L {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar | grep \"Content-Type: application/java-archive\"); do sleep 1; done"
+    - require:
+      - cmd: check_if_jenkins_server_runs
+
+# Download the Jenkins CLI jar file unless it is already downloaded
+download_jenkins_cli_jar:
+  cmd.run:
     - name: "curl -L -o {{ jenkins.cli_path }} {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar"
     - require:
-      - pkg: jenkins_cli_jar
-      - cmd: jenkins_serving
+      - cmd: check_if_jenkins_serves_cli
+    - unless: test -e /var/cache/jenkins/jenkins-cli.jar
 
-jenkins_responding:
-  cmd.wait:
-    - name: "until {{ jenkins_cli('who-am-i') }}; do sleep 1; done"
-    - timeout: {{ timeout }}
-    - watch:
-      - cmd: jenkins_cli_jar
-
-restart_jenkins:
-  cmd.wait:
-    - name: {{ jenkins_cli('safe-restart') }}
+# Login does not take up too much resources and should always run.
+login_to_jenkins_using_cli:
+  cmd.run:
+    - name: "java -jar {{ jenkins.cli_path }} -s {{ jenkins.master_url }} login --username {{ jenkins.admin_user }} --password {{ jenkins.admin_pw }}"
     - require:
-      - cmd: jenkins_responding
+      - cmd: download_jenkins_cli_jar
 
-reload_jenkins_config:
-  cmd.wait:
-    - name: {{ jenkins_cli('reload-configuration') }}
+# Another trivial check.
+check_if_jenkins_cli_works:
+  cmd.run:
+    - name: "until {{ cli_macro.jenkins_cli('who-am-i') }}; do sleep 1; done"
     - require:
-      - cmd: jenkins_responding
+      - cmd: login_to_jenkins_using_cli

@@ -1,22 +1,20 @@
-include:
-  - jenkins
-  - jenkins.cli
-
 {% from "jenkins/map.jinja" import jenkins with context %}
 
+{# All Jinja macros used in cli.sls #}
 {%- macro fmtarg(prefix, value)-%}
 {{ (prefix + ' ' + value) if value else '' }}
 {%- endmacro -%}
+
 {%- macro jenkins_cli(cmd) -%}
 {{ ' '.join(['java', '-jar', jenkins.cli_path, '-s', jenkins.master_url, fmtarg('-i', jenkins.get('privkey')), cmd]) }} {{ ' '.join(varargs) }}
 {%- endmacro -%}
 
-{% for job, path in jenkins.jobs.installed.iteritems() %}
-jenkins_install_job_{{ job }}:
-  cmd.run:
-    - unless: {{ jenkins_cli('list-jobs') }} | grep {{ job }}
-    - name: {{ jenkins_cli('create-job', job, '<', path) }}
-    - require:
-      - sls: jenkins
-      - sls: jenkins.cli
-{% endfor %}
+{% if grains['os_family'] == 'RedHat' %}
+  {%- macro jenkins_listen() -%}
+  {{ ' '.join(['curl', '-I', jenkins.master_url]) }}
+  {%- endmacro -%}
+{% else %}
+  {%- macro jenkins_listen() -%}
+  {{ ' '.join(['nc', '-z', 'localhost', jenkins.jenkins_port|string]) }}
+  {%- endmacro -%}
+{% endif %}
