@@ -29,3 +29,34 @@ deploy_private_key_on_agent:
     - mode: 640
     - require:
       - file: create_ssh_directory_on_agent
+
+create_ssh_directory_for_git_auth_for_agents:
+  file.directory:
+    - name: /var/.ssh
+    - user: {{ jenkins.user }}
+    - group: {{ jenkins.group }}
+    - mode: 755
+
+deploy_private_key_for_git_auth_for_agents:
+  file.managed:
+    # The private key is on jenkins agents
+    - name: /var/.ssh/id_rsa
+    # Set here the location of the pillar item where you have stored your key
+    - contents_pillar: jenkins:agent:private_key
+    - user: {{ jenkins.user }}
+    - group: {{ jenkins.group }}
+    - mode: 600
+    - require:
+      - file: create_ssh_directory_for_git_auth_for_agents
+
+deploy_private_key_on_agents:
+  file.managed:
+    # The private key is on an agent
+    - name: {{ jenkins.home }}/.ssh/id_rsa
+    # Set here the location of the pillar item where you have stored your key
+    - contents_pillar: jenkins:agent:private_key
+    - user: {{ jenkins.user }}
+    - group: {{ jenkins.group }}
+    - mode: 600
+    - require:
+      - file: deploy_private_key_for_git_auth_for_agents

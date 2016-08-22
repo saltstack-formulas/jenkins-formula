@@ -38,9 +38,12 @@ change_file_ownership_of_JENKINS_HOME:
     - name: {{ jenkins.home }}
     - user: {{ jenkins.user }}
     - group: {{ jenkins.group }}
+    - file_mode: 744
+    - dir_mode: 755
     - recurse:
       - user
       - group
+      - mode
     - watch:
       - git: get_jenkins_config_from_git
     - unless: stat -c '%U' {{ jenkins.home }} | grep jenkins
