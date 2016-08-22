@@ -60,3 +60,13 @@ deploy_private_key_on_agents:
     - mode: 600
     - require:
       - file: deploy_private_key_for_git_auth_for_agents
+
+set_known_host_for_git_login:
+  file.managed:
+    - name: {{ jenkins.home }}/.ssh/known_hosts
+    - contents_pillar: jenkins:agent:known_hosts
+    - user: {{ jenkins.user }}
+    - group: {{ jenkins.group }}
+    - mode: 600
+    - require:
+      - file: create_ssh_directory_for_git_auth_for_agents

@@ -20,3 +20,13 @@ deploy_private_key_on_master:
     - mode: 600
     - require:
       - file: create_ssh_directory_on_master
+
+set_known_host_for_git_login_on_master:
+  file.managed:
+    - name: {{ jenkins.home }}/.ssh/known_hosts
+    - contents_pillar: jenkins:master:known_hosts
+    - user: {{ jenkins.user }}
+    - group: {{ jenkins.group }}
+    - mode: 600
+    - require:
+      - file: create_ssh_directory_on_master
