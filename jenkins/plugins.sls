@@ -36,7 +36,7 @@ jenkins_install_plugin_{{ plugin }}:
   cmd.run:
     - unless: {{ jenkins_cli('list-plugins') }} | grep {{ plugin }}
     - name: {{ jenkins_cli('install-plugin', plugin) }}
-    - timeout: 60
+    - timeout: {{ jenkins.plugins.timeout }}
     - require:
       - service: jenkins
       - cmd: jenkins_updates_file
