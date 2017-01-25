@@ -8,7 +8,7 @@ include:
 {{ (prefix + ' ' + value) if value else '' }}
 {%- endmacro -%}
 {%- macro jenkins_cli(cmd) -%}
-{{ ' '.join(['java', '-jar', jenkins.cli_path, '-s', jenkins.master_url, fmtarg('-i', jenkins.get('privkey')), cmd]) }} {{ ' '.join(varargs) }}
+{{ ' '.join(['java', '-jar', jenkins.cli_path, '-s', jenkins.master_url, fmtarg('-i', jenkins.get('privkey')), cmd, '--username admin --password $(cat /var/lib/jenkins/secrets/initialAdminPassword)']) }} {{ ' '.join(varargs) }}
 {%- endmacro -%}
 
 {% for job, path in jenkins.jobs.installed.iteritems() %}
