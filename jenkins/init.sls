@@ -49,3 +49,23 @@ jenkins:
     - enable: True
     - watch:
       - pkg: jenkins
+      {% if grains['os_family'] in ['RedHat', 'Debian'] %}
+      - file: jenkins config
+      {% endif %}
+
+{% if grains['os_family'] in ['RedHat', 'Debian'] %}
+jenkins config:
+  file.managed:
+    {% if grains['os_family'] == 'RedHat' %}
+    - name: /etc/sysconfig/jenkins
+    {% elif grains['os_family'] == 'Debian' %}
+    - name: /etc/default/jenkins
+    {% endif %}
+    - template: jinja
+    - source: salt://jenkins/files/jenkins.conf
+    - user: root
+    - group: root
+    - mode: 400
+    - require:
+      - pkg: jenkins
+{% endif %}
