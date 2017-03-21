@@ -1,5 +1,6 @@
 jenkins:
   lookup:
+    jenkins_port: 8080
     port: 80
     home: /var/lib/jenkins
     user: jenkins
@@ -7,7 +8,7 @@ jenkins:
     server_name: localhost
     master_url: http://localhost:8080
     plugins:
-      timeout: 30
+      timeout: 90
       installed:
         - greenballs
     pkgs:

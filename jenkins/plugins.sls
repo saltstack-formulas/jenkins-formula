@@ -40,7 +40,6 @@ jenkins_install_plugin_{{ plugin }}:
     - require:
       - service: jenkins
       - cmd: jenkins_updates_file
-      - cmd: jenkins_responding
     - watch_in:
       - cmd: restart_jenkins
 {% endfor %}

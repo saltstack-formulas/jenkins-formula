@@ -37,21 +37,26 @@ jenkins_cli_jar:
     - require:
       - cmd: jenkins_serving
 
+restart_jenkins:
+  cmd.wait:
+    - name: {{ jenkins_cli('safe-restart') }}
+    - require:
+      - cmd: jenkins_cli_jar
+
+reload_jenkins_config:
+  cmd.wait:
+    - name: {{ jenkins_cli('reload-configuration') }}
+    - require:
+      - cmd: jenkins_cli_jar
+
 jenkins_responding:
   cmd.wait:
     - name: "until {{ jenkins_cli('who-am-i') }}; do sleep 1; done"
     - timeout: {{ timeout }}
     - watch:
       - cmd: jenkins_cli_jar
+    - require: 
+      - cmd: reload_jenkins_config
+      - cmd: restart_jenkins
 
-restart_jenkins:
-  cmd.wait:
-    - name: {{ jenkins_cli('safe-restart') }}
-    - require:
-      - cmd: jenkins_responding
 
-reload_jenkins_config:
-  cmd.wait:
-    - name: {{ jenkins_cli('reload-configuration') }}
-    - require:
-      - cmd: jenkins_responding
