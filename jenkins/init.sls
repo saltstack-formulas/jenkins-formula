@@ -58,11 +58,12 @@ jenkins config:
   file.managed:
     {% if grains['os_family'] == 'RedHat' %}
     - name: /etc/sysconfig/jenkins
+    - source: salt://jenkins/files/RedHat/jenkins.conf
     {% elif grains['os_family'] == 'Debian' %}
     - name: /etc/default/jenkins
+    - source: salt://jenkins/files/Debian/jenkins.conf
     {% endif %}
     - template: jinja
-    - source: salt://jenkins/files/jenkins.conf
     - user: root
     - group: root
     - mode: 400
