@@ -14,6 +14,11 @@
         'server_name': None,
         'cli_path': '/var/cache/jenkins/jenkins-cli.jar',
         'cli_timeout': 60,
+        'cli': {
+            'connection_mode': 'http',
+            'ssh_user': '',
+            'http_auth': 'admin:$(cat /var/lib/jenkins/secrets/initialAdminPassword)'
+        },
         'master_url': 'http://localhost:8080',
         'plugins': {
             'updates_source': 'http://updates.jenkins-ci.org/update-center.json',
