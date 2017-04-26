@@ -13,5 +13,5 @@
 {%- endmacro -%}
 
 {%- macro jenkins_cli(cmd) -%}
-{{ ' '.join(['java', '-jar', jenkins.cli_path, '-s', jenkins.master_url, fmtarg('-i', jenkins.get('privkey')), jenkins_cli_auth_params(jenkins.cli.connection_mode), cmd]) }} {{ ' '.join(varargs) }}
+{{ ' '.join([jenkins.java_executable, '-jar', jenkins.cli_path, '-s', jenkins.master_url, fmtarg('-i', jenkins.get('privkey')), jenkins_cli_auth_params(jenkins.cli.connection_mode), cmd]) }} {{ ' '.join(varargs) }}
 {%- endmacro -%}

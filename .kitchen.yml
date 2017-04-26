@@ -1,0 +1,81 @@
+---
+driver:
+  name: docker
+  use_sudo: false
+  privileged: true
+
+verifier:
+  name: inspec
+  format: doc
+
+provisioner:
+  name: salt_solo
+  log_level: debug
+  require_chef: false
+  formula: jenkins
+
+platforms:
+  - name: ubuntu-16.04
+    driver_config:
+      provision_command:
+        - apt-get update && apt-get install -y locales && locale-gen en_US.UTF-8
+      run_command: /sbin/init
+      privileged: true
+      pid_one_command: /usr/lib/systemd/systemd
+#  - name: amazonlinux
+#    driver_config:
+#      image: amazonlinux:latest
+#      platform: rhel
+#      run_command: /sbin/init
+
+suites:
+  - name: default
+    provisioner:
+      vendor_path: vendor
+      state_top:
+        base:
+          '*':
+            - sun-java
+            - sun-java.env
+            - jenkins.plugins
+            - jenkins.jobs
+            - nginx
+            - nginx.ng
+            - nginx.ng.config
+            - nginx.ng.service
+            - jenkins.nginx
+      pillars:
+        top.sls:
+          base:
+            '*':
+              - jenkins
+              - nginx
+        jenkins.sls:
+          jenkins:
+            lookup:
+              netcat_pkg: netcat
+              java_executable: /usr/lib/java/bin/java
+              jenkins_port: 8080
+              port: 80
+              home: /var/lib/jenkins
+              user: jenkins
+              group: www-data
+              nginx_user: jenkins
+              server_name: localhost
+              master_url: http://localhost:8080
+              use_upstart: False
+              plugins:
+                timeout: 90
+                installed:
+                  - greenballs
+              pkgs:
+                - jenkins
+        nginx.sls:
+          nginx:
+            user_auth_enabled: False
+            default_user: jenkins
+            webuser: jenkins
+            use_upstart: False
+            use_sysvinit: False
+            ng:
+              pid_file: /var/run/nginx.pid
