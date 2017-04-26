@@ -1,39 +1,12 @@
-language: python
-python:
-  - '2.7'
+sudo: required
 
-branches:
-  only:
-    - master
+language: ruby
 
-env:
-  global:
-    - BS_PIP_ALLOWED=1
-    - BS_ECHO_DEBUG=1
-    - SALT_ARGS="-l debug --local --retcode-passthrough --pillar-root=test/pillar --file-root=$PWD"
-  matrix:
-    - STATE=jenkins
-    - STATE=jenkins,nginx,jenkins.nginx
-    - STATE=jenkins,jenkins.plugins
+services:
+  - docker
 
 before_install:
-  - sudo apt-get update
-  - curl -L http://bootstrap.saltstack.org | sudo -E sh -s -- stable
+  - bundle install
+  - mkdir vendor && cd $_ && ( for i in nginx sun-java; do git clone http://github.com/saltstack-formulas/$i-formula.git; mv $i-formula/$i .; rm -rf $i-formula; done ); cd ..
 
-install:
-  - sudo mkdir -p /srv && sudo ln -sfn $PWD /srv/formula
-  # See what kind of travis box you're on to help with making your states
-  # compatible with travis
-  - sudo salt-call grains.items --local
-  - if echo $STATE | grep -q nginx; then sudo git clone https://github.com/saltstack-formulas/nginx-formula.git $PWD/nginx-formula; ln -sfn $PWD/nginx-formula/nginx $PWD/nginx; fi
-
-script:
-  - sudo -E salt-call state.show_sls $STATE $SALT_ARGS
-  - sudo -E salt-call state.sls $STATE $SALT_ARGS
-
-  - sudo iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
-
-  # Idempotence check
-  - sudo -E salt-call state.sls $STATE $SALT_ARGS > /tmp/second
-  - cat /tmp/second
-  - bash -c '! grep -q "^Not Run:" /tmp/second'
+script: bundle exec kitchen verify
