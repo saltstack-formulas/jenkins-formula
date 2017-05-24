@@ -1,5 +1,9 @@
 {% from "jenkins/map.jinja" import jenkins with context %}
 
+jenkins_install_java_packages:
+  pkg.installed:
+  - pkgs: [java-1.7.0-openjdk, java-1.7.0-openjdk-devel.x86_64 ]
+
 jenkins_group:
   group.present:
     - name: {{ jenkins.group }}
