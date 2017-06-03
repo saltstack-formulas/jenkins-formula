@@ -1,0 +1,37 @@
+jenkins:
+  stable: False
+  pkgs:
+    - jenkins
+  deb_apt_source: /etc/apt/sources.list.d/jenkins-ci.list
+  netcat_pkg: netcat-openbsd
+  netcat_flag: -z
+  user: jenkins
+  group: jenkins
+  nginx_user: www-data
+  nginx_group: www-data
+  home: /var/lib/jenkins
+  java_args: -Djava.awt.headless=true
+  java_executable: /usr/bin/java
+  jenkins_args:
+  max_open_files: 32768
+  umask: 027
+  enable_access_log: no
+  access_log: --accessLoggerClassName=winstone.accesslog.SimpleAccessLogger --simpleAccessLogger.format=combined --simpleAccessLogger.file=/var/log/$NAME/access.log
+  port: 80
+  jenkins_port: 8080
+  server_name: None
+  cli_path: /var/cache/jenkins/jenkins-cli.jar
+  cli_timeout: 60
+  cli:
+    connection_mode: http
+    ssh_user:
+    http_auth: admin:$(cat /var/lib/jenkins/secrets/initialAdminPassword)
+  master_url: http://localhost:8080
+  plugins:
+    updates_source: http://updates.jenkins-ci.org/update-center.json
+    timeout: 30
+    installed: []
+    disabled: []
+  jobs:
+    installed: {}
+    absent: []

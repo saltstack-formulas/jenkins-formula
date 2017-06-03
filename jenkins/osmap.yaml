@@ -1,0 +1,7 @@
+Debian:
+    netcat_pkg: netcat-openbsd
+    netcat_flag: -z
+
+RedHat:
+    netcat_pkg: nmap-ncat
+    netcat_flag: --recv-only
