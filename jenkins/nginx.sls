@@ -1,5 +1,7 @@
 {% from "jenkins/map.jinja" import jenkins with context %}
 
+{% if jenkins.symlink_vhost %}
+
 /etc/nginx/sites-available/jenkins.conf:
   file.managed:
     - template: jinja
@@ -23,3 +25,18 @@ extend:
         - file: /etc/nginx/sites-available/jenkins.conf
       - require:
         - file: /etc/nginx/sites-enabled/jenkins.conf
+
+{% else %}
+
+Add nginx config for jenkins:
+  file.managed:
+    - template: jinja
+    - name: {{ jenkins.nginx_vhost_path }}/jenkins.conf
+    - source: salt://jenkins/files/nginx.conf
+    - user: {{ jenkins.nginx_user }}
+    - group: {{ jenkins.nginx_group }}
+    - mode: 440
+    - require:
+      - pkg: jenkins 
+
+{% endif %}

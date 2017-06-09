@@ -35,3 +35,4 @@ jenkins:
   jobs:
     installed: {}
     absent: []
+  symlink_vhost: True
