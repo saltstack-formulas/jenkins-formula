@@ -36,3 +36,4 @@ jenkins:
     installed: {}
     absent: []
   symlink_vhost: True
+  nginx_vhost_path: /etc/nginx/conf.d
