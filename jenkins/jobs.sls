@@ -15,4 +15,14 @@ jenkins_install_job_{{ job }}:
       - service: jenkins
       - cmd: jenkins_updates_file
       - cmd: jenkins_cli_jar
+
+jenkins_update_job_{{ job }}:
+  cmd.run:
+    - unless: diff -w {{ jenkins.home }}/jobs/{{ job }}/config.xml {{ path }}
+    - name: {{ jenkins_cli('update-job', job, '<', path) }}
+    - timeout: 360
+    - require:
+      - service: jenkins
+      - cmd: jenkins_updates_file
+      - cmd: jenkins_cli_jar
 {% endfor %}
