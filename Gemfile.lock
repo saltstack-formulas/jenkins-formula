@@ -98,7 +98,7 @@ GEM
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
     rubyntlm (0.6.1)
-    rubyzip (1.2.1)
+    rubyzip (1.2.2)
     safe_yaml (1.0.4)
     slop (3.6.0)
     sslshake (1.2.0)
