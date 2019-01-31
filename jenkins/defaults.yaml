@@ -10,6 +10,7 @@ jenkins:
   nginx_user: www-data
   nginx_group: www-data
   home: /var/lib/jenkins
+  daemon: /usr/bin/daemon
   java_args: -Djava.awt.headless=true
   java_executable: /usr/bin/java
   jenkins_args: ''
