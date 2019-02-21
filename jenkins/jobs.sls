@@ -13,7 +13,6 @@ jenkins_install_job_{{ job }}:
     - timeout: 360
     - require:
       - service: jenkins
-      - cmd: jenkins_updates_file
       - cmd: jenkins_cli_jar
 
 jenkins_update_job_{{ job }}:
@@ -23,6 +22,5 @@ jenkins_update_job_{{ job }}:
     - timeout: 360
     - require:
       - service: jenkins
-      - cmd: jenkins_updates_file
       - cmd: jenkins_cli_jar
 {% endfor %}
