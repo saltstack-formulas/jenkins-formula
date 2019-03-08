@@ -11,6 +11,7 @@ jenkins_user:
     - groups:
       - {{ jenkins.group }}
     - system: True
+    - home: {{ jenkins.home }}
     - shell: /bin/bash
     - require:
       - group: jenkins_group
