@@ -5,7 +5,7 @@ include:
 {% from "jenkins/map.jinja" import jenkins with context %}
 {% from 'jenkins/macros.jinja' import jenkins_cli with context %}
 
-{% for job, path in jenkins.jobs.installed.iteritems() %}
+{% for job, path in jenkins.jobs.installed.items() %}
 jenkins_install_job_{{ job }}:
   cmd.run:
     - unless: {{ jenkins_cli('list-jobs') }} | grep {{ job }}
