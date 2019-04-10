@@ -37,7 +37,7 @@ Assumes you have some way to copy your config to the server, e.g.
 
 .. code-block:: yaml
 
-    {% for job, path in salt['pillar.get']('jenkins:lookup:jobs:installed', {}).iteritems() %}
+    {% for job, path in salt['pillar.get']('jenkins:lookup:jobs:installed', {}).items() %}
     jenkins-host_job_definition_{{ job }}:
       file.managed:
         - name: {{ path }}
