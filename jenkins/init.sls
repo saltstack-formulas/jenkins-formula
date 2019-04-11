@@ -6,14 +6,6 @@ jenkins_group:
     - system: True
 
 jenkins_user:
-  file.directory:
-    - name: {{ jenkins.home }}
-    - user: {{ jenkins.user }}
-    - group: {{ jenkins.group }}
-    - mode: 0755
-    - require:
-      - user: jenkins_user
-      - group: jenkins_group
   user.present:
     - name: {{ jenkins.user }}
     - groups:
@@ -23,6 +15,18 @@ jenkins_user:
     - shell: /bin/bash
     - require:
       - group: jenkins_group
+
+{% for dir in ['/var/log/jenkins','/var/cache/jenkins',jenkins.home] %}
+{{ dir }}:
+  file.directory:
+    - user: {{ jenkins.user }}
+    - group: {{ jenkins.group }}
+    - mode: 0755
+    - makedirs: True
+    - require:
+      - user: jenkins_user
+      - group: jenkins_group
+{% endfor %}
 
 jenkins:
   {% if grains['os_family'] in ['RedHat', 'Debian'] %}
