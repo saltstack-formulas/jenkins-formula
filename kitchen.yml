@@ -15,32 +15,30 @@ provisioner:
   formula: jenkins
 
 platforms:
-  - name: ubuntu-16.04
-    driver_config:
+  - name: debian-9-2019-2-py3
+    driver:
+      image: netmanagers/salt-2019.2-py3:debian-9
+  - name: ubuntu-1604-2018-3-py2
+    driver:
+      image: netmanagers/salt-2018.3-py2:ubuntu-16.04
+  - name: centos-7-develop-py3
+    driver:
+      image: netmanagers/salt-develop-py3:centos-7
       provision_command:
-        - apt-get update && apt-get install -y locales && locale-gen en_US.UTF-8
-      run_command: /sbin/init
-      privileged: true
-      pid_one_command: /usr/lib/systemd/systemd
-  - name: centos-7
-    driver_config:
-      image: centos:7
-      provision_command:
-        - yum -y install initscripts
-      platform: rhel
-      run_command: /sbin/init
-      privileged: true
-      pid_one_command: /usr/lib/systemd/systemd
-#  - name: amazonlinux
-#    driver_config:
-#      image: amazonlinux:latest
-#      platform: rhel
-#      run_command: /sbin/init
+        - curl -o bootstrap-salt.sh -L https://bootstrap.saltstack.com
+        - sh bootstrap-salt.sh -XdPbfrq -x python3 git develop
 
 suites:
   - name: default
     provisioner:
-      vendor_path: vendor
+      dependencies:
+        - name: sun-java
+          repo: git
+          source: https://github.com/saltstack-formulas/sun-java-formula.git
+        - name: nginx
+          repo: git
+          source: https://github.com/saltstack-formulas/nginx-formula.git
+
       state_top:
         base:
           '*':
@@ -49,9 +47,8 @@ suites:
             - jenkins.plugins
             - jenkins.jobs
             - nginx
-            - nginx.ng
-            - nginx.ng.config
-            - nginx.ng.service
+            - nginx.config
+            - nginx.service
             - jenkins.nginx
       pillars:
         top.sls:
@@ -91,5 +88,4 @@ suites:
             webuser: jenkins
             use_upstart: False
             use_sysvinit: False
-            ng:
-              pid_file: /var/run/nginx.pid
+            pid_file: /var/run/nginx.pid
