@@ -4,7 +4,10 @@ jenkins:
     port: 80
     home: /var/lib/jenkins
     user: jenkins
-    group: www-data
+    group: jenkins
+    extra_groups:
+      - www-data
+      - some_other_group
     server_name: localhost
     master_url: http://localhost:8080
     plugins:

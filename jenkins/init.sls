@@ -1,5 +1,7 @@
 {% from "jenkins/map.jinja" import jenkins with context %}
 
+{% set extra_groups = jenkins.extra_groups -%}
+
 jenkins_group:
   group.present:
     - name: {{ jenkins.group }}
@@ -10,6 +12,9 @@ jenkins_user:
     - name: {{ jenkins.user }}
     - groups:
       - {{ jenkins.group }}
+      {% for group in extra_groups -%}
+      - {{ group }}
+      {% endfor %}
     - system: True
     - home: {{ jenkins.home }}
     - shell: /bin/bash
