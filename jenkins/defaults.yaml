@@ -30,7 +30,7 @@ jenkins:
     http_auth: admin:$(cat /var/lib/jenkins/secrets/initialAdminPassword)
   master_url: http://localhost:8080
   plugins:
-    updates_source: http://updates.jenkins-ci.org/update-center.json
+    updates_source: https://updates.jenkins.io/update-center.json
     timeout: 30
     installed: []
     disabled: []
