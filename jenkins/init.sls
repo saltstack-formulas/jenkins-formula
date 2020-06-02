@@ -42,12 +42,12 @@ jenkins:
   pkgrepo.managed:
     - humanname: Jenkins upstream package repository
     {% if grains['os_family'] == 'RedHat' %}
-    - baseurl: http://pkg.jenkins-ci.org/redhat{{ repo_suffix }}
-    - gpgkey: http://pkg.jenkins-ci.org/redhat{{ repo_suffix }}/jenkins-ci.org.key
+    - baseurl: http://pkg.jenkins.io/redhat{{ repo_suffix }}
+    - gpgkey: http://pkg.jenkins.io/redhat{{ repo_suffix }}/jenkins.io.key
     {% elif grains['os_family'] == 'Debian' %}
     - file: {{jenkins.deb_apt_source}}
-    - name: deb http://pkg.jenkins-ci.org/debian{{ repo_suffix }} binary/
-    - key_url: http://pkg.jenkins-ci.org/debian{{ repo_suffix }}/jenkins-ci.org.key
+    - name: deb http://pkg.jenkins.io/debian{{ repo_suffix }} binary/
+    - key_url: http://pkg.jenkins.io/debian{{ repo_suffix }}/jenkins.io.key
     {% endif %}
     - require_in:
       - pkg: jenkins
