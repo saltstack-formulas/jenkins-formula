@@ -33,6 +33,14 @@ jenkins_user:
       - group: jenkins_group
 {% endfor %}
 
+{% if grains['os_family'] in ['FreeBSD'] %}
+jenkins-sysrc-args:
+  sysrc.managed:
+    - name: jenkins_args
+    # Prevent hang on service restart
+    - value: '> /dev/null 2>&1'
+{% endif %}
+
 jenkins:
   {% if grains['os_family'] in ['RedHat', 'Debian'] %}
     {% set repo_suffix = '' %}
