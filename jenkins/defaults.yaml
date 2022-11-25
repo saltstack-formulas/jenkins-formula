@@ -5,12 +5,14 @@ jenkins:
   deb_apt_source: /etc/apt/sources.list.d/jenkins-ci.list
   netcat_pkg: netcat-openbsd
   netcat_flag: -z
+  netcat_target: localhost
   user: jenkins
   group: jenkins
   extra_groups: []
   nginx_user: www-data
   nginx_group: www-data
   home: /var/lib/jenkins
+  shell: /bin/bash
   daemon: /usr/bin/daemon
   java_args: -Djava.awt.headless=true
   java_executable: /usr/bin/java

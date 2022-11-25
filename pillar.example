@@ -3,6 +3,7 @@ jenkins:
     jenkins_port: 8080
     port: 80
     home: /var/lib/jenkins
+    shell: /bin/bash
     user: jenkins
     group: jenkins
     extra_groups:

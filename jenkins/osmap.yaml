@@ -5,3 +5,9 @@ Debian:
 RedHat:
     netcat_pkg: nmap-ncat
     netcat_flag: --recv-only
+
+FreeBSD:
+    shell: /bin/sh
+    # FreeBSD comes with nc on board
+    netcat_pkg: False
+    netcat_flag: -z
