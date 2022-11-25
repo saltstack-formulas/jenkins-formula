@@ -1,8 +1,6 @@
 {% from "jenkins/map.jinja" import jenkins with context %}
 {% from 'jenkins/macros.jinja' import jenkins_cli with context %}
 
-{% set timeout = 360 %}
-
 {% if jenkins.netcat_pkg %}
 jenkins_listening-pkg:
   pkg.installed:
@@ -26,7 +24,7 @@ jenkins_serving:
 
   cmd.wait:
     - name: "until (curl -I -L {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar | grep \"Content-Type: application/java-archive\"); do sleep 1; done"
-    - timeout: {{ timeout }}
+    - timeout: {{ jenkins.cli_timeout }}
     - watch:
       - cmd: jenkins_listening-cmd
 
@@ -52,7 +50,7 @@ reload_jenkins_config:
 jenkins_responding:
   cmd.wait:
     - name: "until {{ jenkins_cli('who-am-i') }}; do sleep 1; done"
-    - timeout: {{ timeout }}
+    - timeout: {{ jenkins.cli_timeout }}
     - watch:
       - cmd: jenkins_cli_jar
     - require: 
