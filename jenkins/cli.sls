@@ -13,7 +13,7 @@ jenkins_listening-pkg:
 
 jenkins_listening-cmd:
   cmd.wait:
-    - name: "until nc {{ jenkins.netcat_flag }} localhost {{ jenkins.jenkins_port }}; do sleep 1; done"
+    - name: "until nc {{ jenkins.netcat_flag }} {{ jenkins.netcat_target }} {{ jenkins.jenkins_port }}; do sleep 1; done"
     - timeout: {{ jenkins.cli_timeout }}
     - require:
       - service: jenkins
@@ -28,7 +28,7 @@ jenkins_serving:
     - name: "until (curl -I -L {{ jenkins.master_url }}/jnlpJars/jenkins-cli.jar | grep \"Content-Type: application/java-archive\"); do sleep 1; done"
     - timeout: {{ timeout }}
     - watch:
-      - cmd: jenkins_listening
+      - cmd: jenkins_listening-cmd
 
 jenkins_cli_jar:
   cmd.run:
