@@ -17,7 +17,7 @@ jenkins_user:
       {% endfor %}
     - system: True
     - home: {{ jenkins.home }}
-    - shell: /bin/bash
+    - shell: {{ jenkins.shell }}
     - require:
       - group: jenkins_group
 
