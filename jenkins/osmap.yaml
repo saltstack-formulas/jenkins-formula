@@ -8,3 +8,6 @@ RedHat:
 
 FreeBSD:
     shell: /bin/sh
+    # FreeBSD comes with nc on board
+    netcat_pkg: False
+    netcat_flag: -z

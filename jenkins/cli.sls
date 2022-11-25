@@ -3,9 +3,15 @@
 
 {% set timeout = 360 %}
 
-jenkins_listening:
+{% if jenkins.netcat_pkg %}
+jenkins_listening-pkg:
   pkg.installed:
     - name: {{ jenkins.netcat_pkg }}
+    - require_in:
+      - cmd: jenkins_listening-cmd
+{% endif %}
+
+jenkins_listening-cmd:
   cmd.wait:
     - name: "until nc {{ jenkins.netcat_flag }} localhost {{ jenkins.jenkins_port }}; do sleep 1; done"
     - timeout: {{ jenkins.cli_timeout }}
